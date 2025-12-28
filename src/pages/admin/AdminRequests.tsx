@@ -36,7 +36,7 @@ export const AdminRequests = () => {
     getAllFundsRequest();
   }, []);
 
-  const handleApprove = async (request: FundRequest) => {
+  const ApproveRequest = async (request: FundRequest) => {
     const { error } = await supabase
       .from("funds")
       .update({ status: "approved", approvedAt: new Date().toISOString() })
@@ -56,7 +56,7 @@ export const AdminRequests = () => {
     toast.success(`Fund request for RsRs{request.amount} approved!`);
   };
 
-  const handleReject = async () => {
+  const RejectRequest = async () => {
     if (!selectedRequest) return;
 
     if (!rejectionReason.trim()) {
@@ -148,7 +148,7 @@ export const AdminRequests = () => {
                       <div className="flex gap-2">
                         <Button
                           size="sm"
-                          onClick={() => handleApprove(request)}
+                          onClick={() => ApproveRequest(request)}
                           className="bg-green-500 hover:bg-green-400"
                         >
                           <Check size={16} className="mr-1" />
@@ -257,7 +257,7 @@ export const AdminRequests = () => {
             <Button variant="outline" onClick={() => setRejectDialogOpen(false)}>
               Cancel
             </Button>
-            <Button variant="destructive" onClick={handleReject}>
+            <Button variant="destructive" onClick={RejectRequest}>
               Reject Request
             </Button>
           </DialogFooter>

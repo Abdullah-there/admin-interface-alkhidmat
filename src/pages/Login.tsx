@@ -4,11 +4,9 @@ import { Logo } from '@/components/Logo';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { roles } from '@/lib/constants';
 import { toast } from 'sonner';
-import { Eye, EyeOff, LogIn } from 'lucide-react';
+import { Eye, EyeOff, LogIn, User } from 'lucide-react';
 import { supabase } from '@/supabase-client';
 import { useAuth } from '@/contexts/auth-context';
 import LoadingScreen from '@/components/LoadingComponent';
@@ -20,12 +18,19 @@ const roleRedirects: Record<string, string> = {
 };
 
 export const Login = () => {
-  const { session, loading} = useAuth();
+  const { session, loading } = useAuth();
   const navigate = useNavigate();
+
+  const roles = [
+    "Finance Officer",
+    "Finance Administrator",
+    "Program Manager"
+  ]
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [role, setRole] = useState<string>('');
+  const [selectedRole, setSelectedRole] = useState<string>('Finance Officer');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -81,7 +86,7 @@ export const Login = () => {
                 return;
               }
 
-              const displayName: string | null= prompt("Enter Your One Time Display Name");
+              const displayName: string | null = prompt("Enter Your One Time Display Name");
 
               if (displayName === null) {
                 toast.error("Error, No Name Provided");
@@ -103,7 +108,7 @@ export const Login = () => {
                 setIsLoading(false);
                 return;
               }
-              await supabase.from("users").update({isLoggedIn: true}).eq("email", email);
+              await supabase.from("users").update({ isLoggedIn: true }).eq("email", email);
 
               toast.success('Login successful!');
               setIsLoading(false);
@@ -135,7 +140,7 @@ export const Login = () => {
 
   return (
     <div className="min-h-screen bg-background flex flex-col items-center justify-center p-4">
-      <div className="w-full max-w-md space-y-8 animate-fade-in">
+      <div className="w-full max-w-xl space-y-8 animate-fade-in">
         <div className="text-center">
           <div className="flex justify-center mb-4">
             <Logo size="lg" />
@@ -151,70 +156,89 @@ export const Login = () => {
             <CardDescription>Sign in to your admin account</CardDescription>
           </CardHeader>
           <CardContent className="pt-4">
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="Enter your email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
-                <div className="relative">
-                  <Input
-                    id="password"
-                    type={showPassword ? 'text' : 'password'}
-                    placeholder="Enter your password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                  />
-                  <button
-                    type="button"
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-                    onClick={() => setShowPassword(!showPassword)}
-                  >
-                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                  </button>
+            {role == "" ? (
+              <>
+                <div className="flex gap-4">
+                  {roles.map((r) => (
+                    <div
+                      key={r}
+                      onClick={() => setSelectedRole(r)}
+                      className={`cursor-pointer p-4 shadow-lg w-1/3 flex flex-col gap-3 border-2 transition-all rounded-lg
+                      ${selectedRole === r ? 'border-blue-500 bg-blue-50' : 'border-transparent bg-white'}`}
+                    >
+                      <User />
+                      <p className="font-medium">{r}</p>
+                    </div>
+                  ))}
                 </div>
-              </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="role">Role</Label>
-                <Select value={role} onValueChange={setRole}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select your role" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {roles.map((r) => (
-                      <SelectItem key={r} value={r}>
-                        {r}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+                <Button
+                  onClick={() => setRole(selectedRole)}
+                  disabled={!selectedRole}
+                  className={`mt-4 py-2 px-6 rounded-md text-white font-semibold self-start transition-colors
+                  ${selectedRole ? 'bg-blue-600 hover:bg-blue-700' : 'bg-gray-300 cursor-not-allowed'}`}
+                >
+                  Confirm Selection
+                </Button>
+              </>
+            ) : (
+                <form onSubmit={handleSubmit} className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="email">Email</Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      placeholder="Enter your email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      required
+                    />
+                  </div>
 
-              <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? (
-                  <span className="flex items-center gap-2">
-                    <span className="w-4 h-4 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin" />
-                    Signing in...
-                  </span>
-                ) : (
-                  <span className="flex items-center gap-2">
-                    <LogIn size={18} />
-                    Sign In
-                  </span>
-                )}
-              </Button>
-            </form>
+                  <div className="space-y-2">
+                    <Label htmlFor="password">Password</Label>
+                    <div className="relative">
+                      <Input
+                        id="password"
+                        type={showPassword ? 'text' : 'password'}
+                        placeholder="Enter your password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        required
+                      />
+                      <button
+                        type="button"
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                        onClick={() => setShowPassword(!showPassword)}
+                      >
+                        {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Button className='bg-background text-blue-600 hover:bg-background cursor-pointer hover:underline transition-all'
+                      onClick={() => setRole("")}
+                    >
+                      Change Role
+                    </Button>
+                  </div>
+
+                  <Button type="submit" className="w-full" disabled={isLoading}>
+                    {isLoading ? (
+                      <span className="flex items-center gap-2">
+                        <span className="w-4 h-4 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin" />
+                        Signing in...
+                      </span>
+                    ) : (
+                      <span className="flex items-center gap-2">
+                        <LogIn size={18} />
+                        Sign In
+                      </span>
+                    )}
+                  </Button>
+                </form>
+              )}
 
             <div className="mt-6 p-4 bg-muted rounded-lg">
               <p className="text-sm font-medium text-muted-foreground mb-2">Demo Credentials:</p>
@@ -228,6 +252,6 @@ export const Login = () => {
           </CardContent>
         </Card>
       </div>
-    </div>
+    </div >
   );
 };

@@ -18,6 +18,7 @@ import { OfficerMessages } from "./pages/officer/OfficerMessage";
 import { OfficerReports } from "./pages/officer/OfficerReport";
 import { OfficerDonations } from "./pages/officer/OfficerDonations";
 import { OfficerReportSub } from "./pages/officer/OfficerReportsSub";
+import OfficerDocShare from "./pages/officer/OfficerDocShare";
 
 // Admin Pages
 import { AdminDashboard } from "./pages/admin/AdminDashboard";
@@ -25,6 +26,7 @@ import { AdminReports } from "./pages/admin/AdminReport";
 import { AdminShare } from "./pages/admin/AminShare";
 import { AdminRequests } from "./pages/admin/AdminRequests";
 import { AdminUsers } from "./pages/admin/AdminUsers";
+import AdminDocShare from "./pages/admin/AdminDocShare";
 
 // Manager Pages
 import { ManagerDashboard } from "./pages/manager/ManagerDashboard";
@@ -32,6 +34,7 @@ import { ManagerRequest } from "./pages/manager/ManagerRequest";
 import { ManagerApproved } from "./pages/manager/ManagerApproved";
 import { ManagerDistribute } from "./pages/manager/ManagerDistribute";
 import { ManagerReports } from "./pages/manager/ManagerReports";
+import ManagerDocShare from "./pages/manager/ManagerDocShare";
 
 const queryClient = new QueryClient();
 
@@ -89,6 +92,14 @@ const App = () => (
                 </ProtectedRoute>
               } 
             />
+            <Route 
+              path="/dashboard/officer/documents" 
+              element={
+                <ProtectedRoute allowedRoles={['Finance Officer']}>
+                  <OfficerDocShare />
+                </ProtectedRoute>
+              } 
+            />
 
             {/* Finance Administrator routes */}
             <Route 
@@ -131,6 +142,14 @@ const App = () => (
                 </ProtectedRoute>
               } 
             />
+            <Route 
+              path="/dashboard/admin/documents" 
+              element={
+                <ProtectedRoute allowedRoles={['Finance Administrator']}>
+                  <AdminDocShare />
+                </ProtectedRoute>
+              } 
+            />
 
             {/* Program Manager routes */}
             <Route 
@@ -170,6 +189,14 @@ const App = () => (
               element={
                 <ProtectedRoute allowedRoles={['Program Manager']}>
                   <ManagerReports />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/dashboard/manager/documents" 
+              element={
+                <ProtectedRoute allowedRoles={['Program Manager']}>
+                  <ManagerDocShare />
                 </ProtectedRoute>
               } 
             />

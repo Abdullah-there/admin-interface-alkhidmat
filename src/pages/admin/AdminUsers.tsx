@@ -42,7 +42,7 @@ export const AdminUsers = () => {
     getUsersList();
   }, [session]);
 
-  const handleAddUser = async (e: React.FormEvent) => {
+  const AddAdmin = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!email || !password || !role) {
@@ -121,7 +121,7 @@ export const AdminUsers = () => {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <form onSubmit={handleAddUser} className="space-y-4">
+              <form onSubmit={AddAdmin} className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="email">Email</Label>
                   <Input

@@ -7,7 +7,6 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { getReports, getExternalReports, addExternalReport } from '@/lib/storage';
 import { useAuth } from '@/contexts/auth-context';
 import type { Report, ExternalReport } from '@/lib/constants';
 import { toast } from 'sonner';
@@ -54,7 +53,7 @@ export const AdminShare = () => {
     getExternalReportsAll();
   }, []);
 
-  const handleShare = async () => {
+  const ShareReport = async () => {
     if (!selectedReport || !shareTarget) {
       toast.error('Please select a report and share target');
       return;
@@ -141,7 +140,7 @@ export const AdminShare = () => {
               </div>
             </div>
 
-            <Button onClick={handleShare} className="mt-4">
+            <Button onClick={ShareReport} className="mt-4">
               <ExternalLink size={16} className="mr-2" />
               Share Externally
             </Button>

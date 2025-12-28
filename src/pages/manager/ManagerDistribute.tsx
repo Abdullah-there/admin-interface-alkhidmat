@@ -82,7 +82,7 @@ export const ManagerDistribute = () => {
     setBeneficiaries(updated);
   };
 
-  const handleDistribute = async () => {
+  const MakeDistribution = async () => {
     if (!selectedRequest) {
       toast.error('Please select a fund request');
       return;
@@ -222,7 +222,7 @@ export const ManagerDistribute = () => {
                   </div>
 
                   <Button
-                    onClick={handleDistribute}
+                    onClick={MakeDistribution}
                     className="w-full"
                     disabled={remainingAmount < 0 || isProcessing}
                   >

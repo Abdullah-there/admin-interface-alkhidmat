@@ -40,7 +40,7 @@ export const OfficerDonations = () => {
 
   const selectedCategory = categories.find(c => c.id === category);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const MakeDonation = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!userEmail || !category || !amount || !paymentMethod) {
@@ -111,7 +111,7 @@ export const OfficerDonations = () => {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <form onSubmit={handleSubmit} className="space-y-4">
+              <form onSubmit={MakeDonation} className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="userEmail">Donor Email</Label>
                   <Input

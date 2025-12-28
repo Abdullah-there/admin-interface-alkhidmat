@@ -39,7 +39,7 @@ export const OfficerMessages = () => {
     getAllMessages();
   }, [session]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const SendAcknowledgment = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!title.trim() || !message.trim() || !userEmail.trim()) {
@@ -89,7 +89,7 @@ export const OfficerMessages = () => {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <form onSubmit={handleSubmit} className="space-y-4">
+              <form onSubmit={SendAcknowledgment} className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="userEmail">Recipient Email</Label>
                   <Input

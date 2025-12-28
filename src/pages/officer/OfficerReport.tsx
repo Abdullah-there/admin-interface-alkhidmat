@@ -48,7 +48,7 @@ export const OfficerReports = () => {
     getAllReports();
   }, [session]);
 
-  const generateReport = async () => {
+  const GenerateReport = async () => {
     if (!reportTitle.trim()) {
       toast.error('Please enter a report title');
       return;
@@ -124,7 +124,7 @@ export const OfficerReports = () => {
                 />
               </div>
               <div className="flex items-end">
-                <Button onClick={generateReport} disabled={loading}>
+                <Button onClick={GenerateReport} disabled={loading}>
                   <Share2 size={16} className="mr-2" />
                   {loading ? "Generating ..." : "Generate & Share"}
                 </Button>

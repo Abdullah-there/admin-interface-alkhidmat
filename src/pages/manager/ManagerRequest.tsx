@@ -36,7 +36,7 @@ export const ManagerRequest = () => {
     getAllFunds();
   }, [session]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const MakePaymentRequest = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!amount || !category || !reason.trim()) {
@@ -95,7 +95,7 @@ export const ManagerRequest = () => {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <form onSubmit={handleSubmit} className="space-y-4">
+              <form onSubmit={MakePaymentRequest} className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="amount">Amount (Rs)</Label>
                   <Input
