@@ -7,8 +7,10 @@ import { FileText, ClipboardList, Share2, Clock } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { supabase } from '@/supabase-client';
 import { toast } from 'sonner';
+import { useAuth } from '@/contexts/auth-context';
 
 export const AdminDashboard = () => {
+  const { session }= useAuth();
   const [stats, setStats] = useState({
     reportsCount: 0,
     pendingRequests: 0,
@@ -19,6 +21,7 @@ export const AdminDashboard = () => {
   });
 
   useEffect(() => {
+    if (!session) return;
     const getAllReportsDash = async () => {
       const { data, error } = await supabase.from("reports").select("*");
 
@@ -53,7 +56,7 @@ export const AdminDashboard = () => {
     }
 
     const getAllExternalReportsDash = async () => {
-      const { data, error } = await supabase.from("externalReports").select("*");
+      const { data, error } = await supabase.from("externalReports").select("*").eq("sharedBy", session.user.email);
 
       if (error) {
         toast.error("Error Fetching Reports");

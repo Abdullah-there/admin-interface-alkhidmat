@@ -23,7 +23,7 @@ const OfficerDocShare = () => {
 
     const role = session?.user?.user_metadata?.role;
 
-    const handleUpload = async () => {
+    const ShareImages = async () => {
         if (!image || !subject || !message || SharedWith.length === 0) {
             toast.error("All fields required");
             return;
@@ -148,7 +148,7 @@ const OfficerDocShare = () => {
                             ))}
                         </div>
 
-                        <Button className="w-full" onClick={handleUpload}>
+                        <Button className="w-full" onClick={ShareImages}>
                             Share
                         </Button>
                     </CardContent>
@@ -188,7 +188,7 @@ const OfficerDocShare = () => {
                                 {/* Image */}
                                 <img
                                     src={currentDoc.image_url}
-                                    className="w-full max-h-[320px] object-contain rounded border"
+                                    className="w-full max-h-80 object-contain rounded border"
                                 />
 
                                 {/* Subject */}

@@ -48,6 +48,10 @@ export type Report = {
   totalDonations: number;
   donationsByCategory: Record<string, number>;
   transactionCount: number;
+  periods: {
+    from: string;
+    to: string;
+  };
   createdBy: string;
   created_at?: string;
   sharedWith?: string[];
@@ -60,6 +64,10 @@ export type FundReport = {
   totalDistributed: number;
   FundsByCategory: Record<string, number>;
   FundsByStatus: Record<string, number>;
+  periods: {
+    from: string;
+    to: string;
+  };
   transactionCount: number;
   createdBy: string;
   sharedWith?: string[];

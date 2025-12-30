@@ -25,7 +25,7 @@ export const ManagerRequest = () => {
   useEffect(() => {
     if (!session) return
     const getAllFunds = async () => {
-      const { data, error } = await supabase.from("funds").select("*");
+      const { data, error } = await supabase.from("funds").select("*").eq("requestedBy", session.user.email);
 
       if (error) {
         toast.error("Error Fetching Funds")

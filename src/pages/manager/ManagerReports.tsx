@@ -18,6 +18,8 @@ export const ManagerReports = () => {
   const [reportTitle, setReportTitle] = useState('');
   const [reportLoading, setReportLoading] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
+  const [fromDate, setFromDate] = useState<string>('');
+  const [toDate, setToDate] = useState<string>(''); 
 
   useEffect(() => {
     if (!session) return;
@@ -45,7 +47,19 @@ export const ManagerReports = () => {
 
     try {
       setLoading(true)
-      const { data, error } = await supabase.from("funds").select("*").eq("requestedBy", session?.user.email);
+
+      let query = supabase.from("funds").select("*").eq("requestedBy", session?.user.email);
+
+      if (fromDate) {
+        query = query.gte("created_at", fromDate);
+      }
+
+      if (toDate) {
+        query = query.lte("created_at", toDate);
+      }
+
+      console.log(query)
+      const { data, error } = await query;
 
       if (error) {
         toast.error('Error getting Funds');
@@ -53,7 +67,17 @@ export const ManagerReports = () => {
         return;
       }
 
-      const { data: dis, error: err } = await supabase.from("distributions").select("*").eq("distributedBy", session?.user.email);
+      let query2 = supabase.from("distributions").select("*").eq("distributedBy", session?.user.email);
+
+      if (fromDate) {
+        query = query.gte("created_at", fromDate);
+      }
+
+      if (toDate) {
+        query = query.lte("created_at", toDate);
+      }
+
+      const { data: dis, error: err } = await query2;
 
       if (err) {
         toast.error("Error Getting Distributions");
@@ -83,6 +107,10 @@ export const ManagerReports = () => {
         totalFunds: totalFunds,
         totalDistributed: totalDistributed,
         FundsByCategory: FundsByCategory,
+        periods: {
+          from: fromDate || 'Start',
+          to: toDate || 'Today',
+        },
         FundsByStatus: FundsByStatus,
         transactionCount: data.length,
         createdBy: session?.user.email || '',
@@ -150,6 +178,25 @@ export const ManagerReports = () => {
                 </Button>
               </div>
             </div>
+            <div className="flex gap-20 mt-5 mb-3">
+              <div className="flex gap-3 items-center">
+                <Label>From</Label>
+                <Input
+                  type="date"
+                  value={fromDate}
+                  onChange={(e) => setFromDate(e.target.value)}
+                />
+              </div>
+
+              <div className="flex gap-3 items-center">
+                <Label>To</Label>
+                <Input
+                  type="date"
+                  value={toDate}
+                  onChange={(e) => setToDate(e.target.value)}
+                />
+              </div>
+            </div>
             <p className="text-sm text-muted-foreground mt-2">
               Reports are automatically shared with Finance Officer
             </p>
@@ -174,6 +221,16 @@ export const ManagerReports = () => {
                     <div className="flex items-start justify-between">
                       <div>
                         <h3 className="font-semibold text-lg">{report.title}</h3>
+                        <p className="text-sm text-muted-foreground">
+                          Period:{" "}
+                          <span className="font-medium">
+                            {report.periods?.from ?? 'Start'}
+                          </span>
+                          {" → "}
+                          <span className="font-medium">
+                            {report.periods?.to ?? 'Today'}
+                          </span>
+                        </p>
                         <p className="text-sm text-muted-foreground">
                           Created by {report.createdBy} on {new Date(report.created_at as string).toLocaleDateString()}
                         </p>

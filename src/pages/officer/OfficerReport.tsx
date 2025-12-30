@@ -18,6 +18,7 @@ import { supabase } from '@/supabase-client';
 //   totalDonations: number;
 //   donationsByCategory: Record<string, number>;
 //   transactionCount: number;
+//   periods: Record<string, number>
 //   createdBy: string;
 //   createdAt: string;
 //   sharedWith?: string[];
@@ -29,19 +30,21 @@ export const OfficerReports = () => {
   const [reportTitle, setReportTitle] = useState('');
   const [reportLoading, setReportLoading] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
+  const [fromDate, setFromDate] = useState<string>('');
+  const [toDate, setToDate] = useState<string>(''); 
 
   useEffect(() => {
-     if (!session) return;
+    if (!session) return;
     const getAllReports = async () => {
-      setReportLoading(true);const { data, error } = await supabase.from("reports").select("*").eq("createdBy", session?.user.email);
+      setReportLoading(true); const { data, error } = await supabase.from("reports").select("*").eq("createdBy", session?.user.email);
 
       if (error) {
         toast.error("Error getting Reports");
-      setReportLoading(false);
+        setReportLoading(false);
       } else {
         console.log(data);
         setReports(data);
-      setReportLoading(false);
+        setReportLoading(false);
 
       }
     }
@@ -54,35 +57,49 @@ export const OfficerReports = () => {
       return;
     }
 
-    // const donations = getDonations();
     try {
       setLoading(true)
-      const { data, error } = await supabase.from("donations").select("*");
-  
+      let query = supabase.from("donations").select("*");
+
+      if (fromDate) {
+        query = query.gte("created_at", fromDate);
+      }
+
+      if (toDate) {
+        query = query.lte("created_at", toDate);
+      }
+
+      console.log(query)
+      const { data, error } = await query;
+
       if (error) {
         toast.error('Error getting Donations');
         setLoading(false)
         return;
       }
       const totalDonations = data.reduce((sum, d) => sum + d.amount, 0);
-      
+
       const donationsByCategory: Record<string, number> = {};
       data.forEach(d => {
         donationsByCategory[d.category] = (donationsByCategory[d.category] || 0) + d.amount;
       });
-  
+
       const newReport = {
         title: reportTitle,
-        totalDonations: totalDonations,
-        donationsByCategory: donationsByCategory,
+        totalDonations,
+        donationsByCategory,
+        periods: {
+          from: fromDate || 'Start',
+          to: toDate || 'Today',
+        },
         transactionCount: data.length,
         createdBy: session?.user.email || '',
         sharedWith: ['Finance Administrator'],
       };
-  
+
       await supabase.from("reports").insert(newReport).select("*").single();
-  
-      setReports([{...newReport, created_at: new Date().toISOString()}, ...reports]);
+
+      setReports([{ ...newReport, created_at: new Date().toISOString() }, ...reports]);
       setReportTitle('');
       toast.success('Report generated and shared with Finance Administrator!');
       setLoading(false);
@@ -130,6 +147,27 @@ export const OfficerReports = () => {
                 </Button>
               </div>
             </div>
+
+            <div className="flex gap-20 mt-5 mb-3">
+              <div className="flex gap-3 items-center">
+                <Label>From</Label>
+                <Input
+                  type="date"
+                  value={fromDate}
+                  onChange={(e) => setFromDate(e.target.value)}
+                />
+              </div>
+
+              <div className="flex gap-3 items-center">
+                <Label>To</Label>
+                <Input
+                  type="date"
+                  value={toDate}
+                  onChange={(e) => setToDate(e.target.value)}
+                />
+              </div>
+            </div>
+
             <p className="text-sm text-muted-foreground mt-2">
               Reports are automatically shared with Finance Administrator
             </p>
@@ -147,13 +185,23 @@ export const OfficerReports = () => {
             {reports.length > 0 ? (
               <div className="space-y-4">
                 {reports.map((report) => (
-                  <div 
-                    key={report.id} 
+                  <div
+                    key={report.id}
                     className="p-4 border border-border rounded-lg space-y-4"
                   >
                     <div className="flex items-start justify-between">
                       <div>
                         <h3 className="font-semibold text-lg">{report.title}</h3>
+                        <p className="text-sm text-muted-foreground">
+                          Period:{" "}
+                          <span className="font-medium">
+                            {report.periods?.from ?? 'Start'}
+                          </span>
+                          {" → "}
+                          <span className="font-medium">
+                            {report.periods?.to ?? 'Today'}
+                          </span>
+                        </p>
                         <p className="text-sm text-muted-foreground">
                           Created by {report.createdBy} on {new Date(report.created_at as string).toLocaleDateString()}
                         </p>
@@ -167,7 +215,7 @@ export const OfficerReports = () => {
                       <div className="p-3 bg-muted rounded-lg">
                         <p className="text-sm text-muted-foreground">Total Amount</p>
                         <p className="text-xl font-bold text-primary">
-                          ${report.totalDonations.toLocaleString()}
+                          Rs{report.totalDonations.toLocaleString()}
                         </p>
                       </div>
                       <div className="p-3 bg-muted rounded-lg">
@@ -181,7 +229,7 @@ export const OfficerReports = () => {
                       <div className="flex flex-wrap gap-2">
                         {Object.entries(report.donationsByCategory).map(([catId, amount]) => (
                           <Badge key={catId} variant="secondary">
-                            {getCategoryTitle(catId)}: ${amount.toLocaleString()}
+                            {getCategoryTitle(catId)}: Rs{amount.toLocaleString()}
                           </Badge>
                         ))}
                       </div>

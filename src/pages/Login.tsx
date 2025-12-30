@@ -10,6 +10,7 @@ import { Eye, EyeOff, LogIn, User } from 'lucide-react';
 import { supabase } from '@/supabase-client';
 import { useAuth } from '@/contexts/auth-context';
 import LoadingScreen from '@/components/LoadingComponent';
+import bcrypt from 'bcryptjs';
 
 const roleRedirects: Record<string, string> = {
   'Finance Officer': '/dashboard/officer',
@@ -67,7 +68,6 @@ export const Login = () => {
             console.log(finalCheckForNewUser)
 
             if (finalCheckForNewUser.length > 0) {
-              console.log("here123")
               const { error } = await supabase.auth.signInWithPassword({ email: email, password: password });
 
               if (error) {
@@ -80,7 +80,8 @@ export const Login = () => {
               return;
 
             } else {
-              if (password !== finalCheck[0].password) {
+              const comparision = bcrypt.compareSync(password, finalCheck[0].password);
+              if (!comparision) {
                 toast.error("Password Is Incorrect");
                 setIsLoading(false);
                 return;

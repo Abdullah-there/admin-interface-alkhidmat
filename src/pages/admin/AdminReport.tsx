@@ -15,7 +15,7 @@ export const AdminReports = () => {
   useEffect(() => {
     const getAllReports = async () => {
       setReportLoading(true);
-      const { data, error } = await supabase.from("reports").select("*");
+      const { data, error } = await supabase.from("reports").select("*").order('created_at', { ascending: false });;
 
       if (error) {
         toast.error("Error getting Reports");
@@ -53,6 +53,16 @@ export const AdminReports = () => {
                         <FileText size={20} />
                         {report.title}
                       </CardTitle>
+                      <p className="text-sm text-muted-foreground mt-2">
+                        Period:{" "}
+                        <span className="font-medium">
+                          {report.periods?.from ?? 'Start'}
+                        </span>
+                        {" → "}
+                        <span className="font-medium">
+                          {report.periods?.to ?? 'Today'}
+                        </span>
+                      </p>
                       <p className="text-sm text-muted-foreground mt-1">
                         Created by {report.createdBy} on {new Date(report.created_at as string).toLocaleDateString()}
                       </p>

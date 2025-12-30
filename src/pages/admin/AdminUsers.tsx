@@ -14,6 +14,7 @@ import { toast } from 'sonner';
 import { Users, UserPlus, Trash2 } from 'lucide-react';
 import { supabase } from '@/supabase-client';
 import { useAuth } from '@/contexts/auth-context';
+import bcrypt from "bcryptjs";
 
 export const AdminUsers = () => {
   const { session } = useAuth();
@@ -58,12 +59,14 @@ export const AdminUsers = () => {
 
     setIsLoading(true);
 
+    const hashedPassword = await bcrypt.hash(password, 10);
+
     const dataToAdd = {
       email: email,
       role: role,
       isAdmin: true,
       isLoggedIn: false,
-      password: password,
+      password: hashedPassword,
     }
     const { error } = await supabase.from("users").insert(dataToAdd).select("*").single();
 

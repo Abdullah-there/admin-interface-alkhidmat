@@ -24,6 +24,7 @@ export const AdminShare = () => {
   const [reportLoadingExternal, setReportLoadingExternal] = useState<boolean>(false);
 
   useEffect(() => {
+    if (!session) return
     const getAllReports = async () => {
       setReportLoading(true);
       const { data, error } = await supabase.from("reports").select("*");
@@ -39,7 +40,7 @@ export const AdminShare = () => {
     }
     const getExternalReportsAll = async () => {
       setReportLoadingExternal(true);
-      const { data, error } = await supabase.from("externalReports").select("*");
+      const { data, error } = await supabase.from("externalReports").select("*").eq("sharedBy", session?.user.email);
 
       if (error) {
         toast.error("Error getting Reports");
@@ -188,10 +189,10 @@ export const AdminShare = () => {
                   ))}
                 </TableBody>
               </Table>
-            ) : reportLoadingExternal ? (
+            ) : reportLoadingExternal || reportLoading ? (
               <div className="text-center py-12 text-muted-foreground">
                 <Share2 size={48} className="mx-auto mb-4 opacity-50" />
-                <p>Loading External Reports Shared ...</p>
+                <p>Loading Reports ...</p>
               </div>
             ) : (
               <div className="text-center py-12 text-muted-foreground">

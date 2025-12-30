@@ -25,7 +25,7 @@ export const ManagerDashboard = () => {
     if (!session) return;
 
     const getAllFundsDash = async () => {
-      const { data, error } = await supabase.from("funds").select("*");
+      const { data, error } = await supabase.from("funds").select("*").eq("requestedBy", session?.user.email);
 
       if (error) {
         toast.error("Error Fetching Funds");
